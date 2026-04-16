@@ -37,16 +37,8 @@ router.post('/edit_profile', Uploader.single('image'), async (req, res) => {
                 await Cloudinary.uploader.destroy(user.profile_img_id)
             }
 
-            const timestamp = Math.floor(Date.now() / 1000);
-            const signature = Cloudinary.utils.api_sign_request({
-                folder: "user-images",
-                timestamp: timestamp
-            }, process.env.api_secret);
-
             const upload = await Cloudinary.uploader.upload(req.file.path, {
-                folder: "user-images",
-                timestamp: timestamp,
-                signature: signature
+                folder: "user-images"
             })
 
             final_img_id = upload.public_id

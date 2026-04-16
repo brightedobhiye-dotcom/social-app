@@ -3,10 +3,10 @@ const path = require('path');
 
 module.exports = multer({
     storage: multer.diskStorage({}),
-    filefilter: (req, file, cb) => {
+    fileFilter: (req, file, cb) => {
         let ext = path.extname(file.originalname).toLowerCase();
         if(ext !== ".jpg" && ext !== ".jpeg" && ext !== ".png" && ext !== ".gif" && ext !== '.mp4'){
-            cb(new error("file type is not supported"), false)
+            cb(new Error("file type is not supported"), false)
             return
         }
         cb(null, true);
