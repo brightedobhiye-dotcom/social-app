@@ -10,6 +10,11 @@ const userSchema = new Schema({
     password: String,
     profile_img_id: { type: String, default: '' },
     profile_img_url: { type: String, default: '' },
+    photo_id:[String],
+    photo_url:[String],
+    video_id:[String],
+    video_url:[String],
+    
     bio: String, //Short description
     interests: {
         type: String,

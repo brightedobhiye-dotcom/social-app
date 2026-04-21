@@ -41,8 +41,8 @@ router.post('/edit_profile', Uploader.single('image'), async (req, res) => {
                 folder: "user-images"
             })
 
-            final_img_id = upload.public_id
-            final_img_url = upload.secure_url
+            final_profile_img_id = upload.public_id
+            final_profile_img_url = upload.secure_url
         }
 
         // ==== UPDATE USER FIELDS ====
@@ -75,6 +75,7 @@ router.post('/edit_profile', Uploader.single('image'), async (req, res) => {
 
 // endpoint to view profile
 router.post('/view_profile', async (req, res) => {
+    console.log('View profile endpoint hit')
     try {
         const { token } = req.body
 
@@ -109,22 +110,26 @@ router.post('/upload_photos', Uploader.array('images', 11), async (req, res) => 
     try {
         const { token } = req.body
 
+        console.log('stage 1 passed')
         if (!token) {
             return res.status(400).send({ status: 'error', msg: 'Token required' })
         }
 
         const user = jwt.verify(token, process.env.JWT_SECRET)
         const userId = user._id
+        console.log('stage 2 passed')
 
         if (!req.files || req.files.length === 0) {
             return res.status(400).send({ status: 'error', msg: 'No files uploaded' })
         }
+        console.log('stage 3 passed')
 
         let profile = await User.findById(userId);
 
         if (!profile) {
             return res.status(404).send({ status: 'error', msg: 'User not found' })
         }
+        console.log('stage 4 passed')
 
         const uploadedPhotos = []
 
@@ -133,16 +138,20 @@ router.post('/upload_photos', Uploader.array('images', 11), async (req, res) => 
             const upload = await Cloudinary.uploader.upload(file.path, {
                 folder: "photos"
             })
-
             profile.photo_id.push(upload.public_id)
             profile.photo_url.push(upload.secure_url)
 
             uploadedPhotos.push(upload)
         }
+        console.log('stage 5 passed')
 
         await profile.save()
 
+        console.log('stage 6 passed')
+
+
         const photo_count = profile.photo_id ? profile.photo_id.length : 0
+        console.log('stage 7 passed')
 
         return res.status(200).send({ status: 'ok', msg: 'success', file: uploadedPhotos, profile, photo_count })
     } catch (error) {
@@ -186,10 +195,15 @@ router.post('/upload_videos', Uploader.array('videos', 10), async (req, res) => 
                 resource_type: "video"
             })
 
-            profile.videos.push({
-                vid_url: upload.secure_url,
-                vid_id: upload.public_id
-            })
+            console.log(`PROFILE: ${profile}`)
+
+            profile.video_id.push(upload.public_id);
+            profile.video_url.push(upload.secure_url);
+
+            // profile.videos.push({
+            //     vid_url: upload.secure_url,
+            //     vid_id: upload.public_id
+            // })
 
             uploadedVideos.push(upload)
         }
